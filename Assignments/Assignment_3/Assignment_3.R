@@ -1,5 +1,5 @@
 # Assignment Week 3
-
+library(tidyverse)
 
 
 
@@ -78,7 +78,7 @@ levels(dat$Headwidth) # levels gives all the "options" of a factor you feed it
                                             # It should probably be "41.000"
 
 # FIND WHICH ONES HAVE "41mm"
-
+which(dat$Headwidth == "41mm")
 
 
 # CONVERT THOSE TO "41.000"
@@ -118,14 +118,18 @@ df1 # look at it...note column names are what we gave it.
 # save it into an object called "dat3"
 
 
+dat3 <- dat[1:20,c("Colony","Headwidth")]
 
-
+write.csv(dat3, "dat3.csv")
 
 ###### WRITING OUT FILES FROM R #######
 ?write.csv()
 
 
+
+
 # Write your new object "dat3" to a file named "LASTNAME_first_file.csv" in your PERSONAL git repository
+write.csv(dat3, "JAMES_first_file.csv")
 
 
 
@@ -153,6 +157,9 @@ new_vector = c() # it's empty
 # also define a counter
 x = 1
 
+
+
+
 for(i in levels(dat$Size.class)){
   new_vector[x] = mean(dat[dat$Size.class == i,"Mass"])
   x = x+1 # add 1 to the counter (this will change the element of new_vector we access each loop)
@@ -170,7 +177,9 @@ new_vector
 #fill it in
 size_class_mean_mass = data.frame(...)
 
-
+size_class_mean_mass = data.frame(SizeClass=levels(dat$Size.class),
+                                  MEAN=new_vector,
+                                  abcs=letters[1:6])
 
 
 

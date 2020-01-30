@@ -40,4 +40,4 @@ dev.off() #closes and writes that file you opened
 
 #for assignment 3
 dat$Headwidth[dat$Headwidth=="41mm"] <- 41 #wont work because factor level is .ooo
-dat$Headwidth[dat$Headwidth=="41mm"] <- 41.000 #this will bc 41.000 IS in data set
+dat$Headwidth[dat$Headwidth=="41mm"] <- "41.000" #this will bc 41.000 IS in data set
