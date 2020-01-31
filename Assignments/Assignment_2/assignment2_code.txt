@@ -1,0 +1,18 @@
+step 1
+wc -l m*.pdb
+
+step 2
+wc -l m*.pdb > ../../../../../Data_Course_JAMES/Assignments/Assignment_2/m_lines.txt
+(redirects the input and puts it in the file m_lines.txt)
+
+Step 3
+cat animals.txt | cut -c 12-19 | sort |uniq > ../../../../Data_Course_JAMES/Assignments/Assignment_2/unique_animals.txt 
+
+Step 4
+cat BioLog_Plate_Data.csv | cut -f 5 -d "," > ../../Data_Course_JAMES/Assignments/Assignment_2/unique_C-substrates.txt 
+
+Step 5
+wc -l *.txt | sort -r
+
+Step 6
+find . -type f -name "*.txt" -exec bash ~/Desktop/Data_Course_JAMES/Data/data-shell/scripts/sum_lines.sh {} \; > ~/Desktop/Data_Course_JAMES/Assignments/Assignment_2/file_sums.txt 
