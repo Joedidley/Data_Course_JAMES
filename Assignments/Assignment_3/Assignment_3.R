@@ -16,8 +16,11 @@ vector1*vector2
 
 list.files()
 
-dat = read.csv("./Data/thatch_ant.csv")
+#this pulls certain data out of a file, and assigns it to the term 'dat'
+dat = read.csv("./Data/thatch_ant.csv") #can do read.csv(Data/thatch_ant.csv) [the ./ just means where you are currently]
 names(dat)
+
+
 
 #why are these plots different???
 plot(x=dat$Headwidth..mm., y=dat$Mass)
@@ -70,7 +73,7 @@ dev.off()
 
 
 # back to our ant data...
-dat$Headwidth
+dat$Headwidth #when it says LEVELS, it means factors, not numeric, which is a problem
 levels(dat$Headwidth) # levels gives all the "options" of a factor you feed it
 
 # I notice a couple weird ones in there: "" and "41mm"
@@ -78,7 +81,12 @@ levels(dat$Headwidth) # levels gives all the "options" of a factor you feed it
                                             # It should probably be "41.000"
 
 # FIND WHICH ONES HAVE "41mm"
-which(dat$Headwidth == "41mm")
+which(dat$Headwidth == "41mm") #returns line number for which are true, which is 1031
+dat$Headwidth == "41mm"
+
+#bad41 <-  which(dat$Headwidth == "41mm")
+#dat$Headwidth[bad41] <- "41.000"
+
 
 
 # CONVERT THOSE TO "41.000"
@@ -90,15 +98,32 @@ dat$Headwidth[dat$Headwidth == ""] <- "NA"
 
 
 # NOW, REMOVE ALL THE ROWS OF "dat" THAT HAVE AN "NA" VALUE
-na.omit(dat)
+dat <- na.omit(dat) #putting the 'dat <- ' saves the na.omit(dat) command
 
 
 # NOW, CONVERT THAT PESKY "Headwidth" COLUMN INTO A NUMERIC VECTOR WITHIN "dat"
-class(dat$Headwidth)
-as.numeric(dat$Headwidth)
+levels(dat$Headwidth) #shows all possabilities
+unique(dat$Headwidth) #shows what we fixed
+
+factor(dat$Headwidth,levels = unique(dat$Headwidth))
+dat$Headwidth <- factor(dat$Headwidth,levels = unique(dat$Headwidth))
+levels(dat$Headwidth)
+
+
+as.numeric(as.character(dat$Headwidth)) #same thing. turned it into a character first,
+#making the 41.000 into a character instead of a factor, which can then be turned into a numeric
+dat$Headwidth <- dat$Headwidth %>% as.character() %>% as.numeric() #same thing(tidyverse)
+
+
+#as.numeric(dat$Headwidth) this wont work, need to turn the factor into a character before we turn into numeric
 dat$Headwidth_numeric = as.numeric(dat$Headwidth) #this creates a Headwidth_numeric
 class(dat$Headwidth) #this is a factor
 class(dat$Headwidth_numeric) #this is a numeric
+
+
+
+plot(dat$Headwidth,dat$Mass) #this will give scatter plot now since both--
+#--since both headwidth and mass are NUMERIC 
 
 # LET'S LEARN HOW TO MAKE A DATA FRAME FROM SCRATCH... WE JUST FEED IT VECTORS WITH NAMES!
 
@@ -112,6 +137,14 @@ data.frame(Clothes = col1, Numbers = col2, Factor_numbers = col3) # colname = ve
 df1 = data.frame(Clothes = col1, Numbers = col2, Factor_numbers = col3) # assign to df1
 df1 # look at it...note column names are what we gave it.
 
+dat$Mass
+plot(y=dat$Mass,x=dat$Size.class)
+
+under30_mass <- dat %>% filter(Size.class == "<30") %>%
+  select((Mass))
+
+class(under30_mass$Mass)
+mean(under30_mass$Mass)
 
 
 # Make a data frame from the first 20 rows of the ant data that only has "Colony" and "Mass"
@@ -138,7 +171,7 @@ write.csv(dat3, "JAMES_first_file.csv")
 
 #simplest example:
 for(i in 1:10){
-  print(i)
+  print(i+10)
 }
 
 #another easy one
@@ -181,21 +214,57 @@ size_class_mean_mass = data.frame(SizeClass=levels(dat$Size.class),
                                   MEAN=new_vector,
                                   abcs=letters[1:6])
 
+#this is another way to do it
+dat %>% group_by(Size.class) %>%
+  summarize(MEAN = mean(Mass))
+
+#another example, with more variables
+dat %>% group_by(Size.class) %>%
+  summarize(firstvariablename = mean(Mass),
+            secondaskoehfow = mean(Headwidth),
+            medianheadwidth = median(Headwidth))
+
+#if you want to save it, add "datsummary <- "
+
+datsummary <- dat %>% group_by(Size.class) %>%
+  summarize(firstvariablename = mean(Mass),
+            secondaskoehfow = mean(Headwidth),
+            medianheadwidth = median(Headwidth))
+
+#write.csv(d,"Assignments/Assignment3,"my thing"")
+#^^^example of saving downstream (into further files)
+
+
+#ADDITIONAL PRACTTICE
+#data("iris")
+#iris %>% group_by(Species) %>%
+  #summarize(MeanSepLength = mean(Sepal.Length))
+
 
 
 ############ YOUR HOMEWORK ASSIGNMENT ##############
 
 # 1.  Make a scatterplot of headwidth vs mass. See if you can get the points to be colored by "Colony"
-
+plot(y=dat$Headwidth, x=dat$Mass, col=dat$Colony, pch=20,
+     main = "Headwidth vs Mass", ylab = "Headwidth", xlab = "Mass")
 
 # 2.  Write the code to save it (with meaningful labels) as a jpeg file
 
 
-# 3.  Subset the thatch ant data set to only include ants from colony 1 and colony 2
+#how to save a plot. You can save it to anywhere by putting relative file path 
+jpeg("HeadwidthVsMassPlot.jpg") #opens connection on a file to your computer
+plot(y=dat$Headwidth, x=dat$Mass, col=dat$Colony, pch=20,
+     main = "Headwidth vs Mass", ylab = "Headwidth", xlab = "Mass")
+dev.off() #closes and writes that file you opened
 
+
+
+# 3.  Subset the thatch ant data set to only include ants from colony 1 and colony 2
+dat %>% filter(Colony %in% c(1,2))
+datC1C2 <- dat %>% filter(Colony %in% c(1,2))
 
 # 4.  Write code to save this new subset as a .csv file
-
+write.csv(dat,file="assignment3.csv")
 
 # 5.  Upload this R script (with all answers filled in and tasks completed) to canvas
       # I should be able to run your R script and get all the plots created and saved, etc.
