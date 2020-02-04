@@ -264,7 +264,7 @@ dat %>% filter(Colony %in% c(1,2))
 datC1C2 <- dat %>% filter(Colony %in% c(1,2))
 
 # 4.  Write code to save this new subset as a .csv file
-write.csv(dat,file="assignment3.csv")
+write.csv(datC1C2,file="assignment3.csv")
 
 # 5.  Upload this R script (with all answers filled in and tasks completed) to canvas
       # I should be able to run your R script and get all the plots created and saved, etc.

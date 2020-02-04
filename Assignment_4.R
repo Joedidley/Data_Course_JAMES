@@ -15,5 +15,18 @@ head(df)
 #the source code is different, sep = ";"
 
   #+ **3. Why does read.csv2() even exist?**
-#the variant used in countries that use a comma as decimal point
+#read.csv2() is used in countries that use a comma as decimal point
 #and a semicolon as field separator
+
+
+class(df$State)
+class(df$Date)
+
+dim(df)
+str(df)
+summary(df)
+
+
+
+
+
