@@ -4,8 +4,10 @@ df <- read.delim("./Data/ITS_mapping.csv")
 
 glimpse(df)
 table(df$Ecosys_Type)
+table(df$Host_Type)
 
-#subset df to just Aerialand Marine      Ecosystem_Type
+
+#subset df to just Aerial and Marine      Ecosystem_Type
 
 
 
@@ -33,8 +35,8 @@ summary(df$Lat)
 summary(df$Lat)[3] #3 because its the third value given
 summary(df$Lat)[c(3,5)] #mean and third quart
 
-
-jpeg("./Code")
+#saving the plot
+jpeg("./Code.jpg")
 plot(df2$Lat,df2$Lon)
 dev.off()
 
@@ -51,21 +53,44 @@ class(df$Ecosystem) #check that it's now a character
 df %>% filter(Ecosys_Type %in% c("Marine","Terrestrial"))
 
 df3 <- df %>% filter(Ecosys_Type %in% c("Marine","Terrestrial"))
+
+df3 %>% group_by(Ecosys_Type) %>% 
+  summarise(X=n(),Y=mean(Lat))
+
+
+
 summary(df3$Lat)[c(7,4)]
 
 #ZAHN example of above
 
 mean(df$Lat)
-df[is.na(df$Lat),] <- 0 #changes the "NA" values to 0, so we can get mean
+
+notnarows <- which(!is.na(df$Lat))
+df <- df[notnarows,]
+
+
+# df[is.na(df$Lat),] <- 0 #changes the "NA" values to 0, so we can get mean
 
 df %>% group_by(Ecosys_Type) %>%
   summarize(NumberOfSamples = n(),
             Mean_Lat = mean(Lat)) %>%
-  filter(Ecosys_Type %in% c("Marine","Terrestrial"))
+  filter(Ecosys_Type != "Aerial") #removing
+  
+  filter(Ecosys_Type %in% c("Marine","Terrestrial")) #including
 
 #make subsets
-marine <- df %>% filter(Ecosys_Type == "Marine")
-terrestrial <- df %>% filter(Ecosys_Type == "Terrestrial")
+marine <- df3 %>% filter(Ecosys_Type == "Marine")
+terrestrial <- df3 %>% filter(Ecosys_Type == "Terrestrial")
+
+# plot histograms
+hist(marine$Lat)
+hist(terrestrial$Lat)
+
+
+both <- df3 %>% filter(Ecosys_Type %in% c("Marine","Terrestrial"))
+
+hist(both$Lat)
+
 
 #find mean and length of each subset
 a <- mean(marine$Lat)
