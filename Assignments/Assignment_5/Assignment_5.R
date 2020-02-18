@@ -25,6 +25,7 @@ data("midwest", package = "ggplot2")
 
 # Let’s initialize a basic ggplot based on the midwest dataset that we loaded.
 ggplot(midwest) # what do you see?
+#it's blank
 
 # give it some aesthetics to work with...
 ggplot(midwest, aes(x=area, y=poptotal))  # area and poptotal are columns in 'midwest'
@@ -43,13 +44,18 @@ ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() # The "+" tells ggplot t
 # Add another geom ... a trendline:
 ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method = "lm")
 # The line of best fit is in blue. Can you find out what other method options are available for geom_smooth? 
+#we can also do auto, glm, gam, loess, etc
+?geom_smooth
 
 # Store your plot as an object to add to...
 p <- ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method = "lm")
 
 # Zoom in
 p + lims(x=c(0,0.1),y=c(0,1000000)) # what did this do?
+#limits the x and y axis, limits scale
 p + coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000)) # how is this different?
+?coord_cartesian
+#set limits on the scale, zooms without changing the underlying data
 
 # Store this new zoomed-in plot
 p2 <- p + coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000))
@@ -77,6 +83,7 @@ ggplot(midwest, aes(x=area, y=poptotal)) +
   coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000)) + 
   labs(title="Area Vs Population", subtitle="From midwest dataset", y="Population", x="Area", caption="Midwest Demographics")
 # what else did we change, and how?
+#we can add theme (plot.title = element_text(angle=60,hjust=1,face="italic",size=18)
 
 
 # Here's where ggplot gets really cool...
@@ -95,6 +102,7 @@ p3 + scale_color_brewer(palette = "Set1")
 # Want more color choices? You can check them out in the RColorBrewer package, or even make your own
 library(RColorBrewer)
 brewer.pal.info
+
 
 # Make your own and take a peek at it:
 library(colorblindr)
@@ -145,6 +153,7 @@ p5 + geom_bar(stat="identity") # something wrong with this picture!
 
 
 # Geoms for looking at a single variable's distribution:
+library(carData)
 data("MplsStops")
 
 ggplot(MplsStops, aes(x=lat)) + geom_histogram() + labs(title = "Latitude of police stops in Minneapolis - 2017")
