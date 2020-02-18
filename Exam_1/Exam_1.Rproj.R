@@ -54,6 +54,8 @@ summary(df$DNA_Concentration_Ben)[1]
 df %>% group_by(Year_Collected) %>%
 
 
+
+
 #Part 5
 #Subset the data frame so it's just the "Downstairs" lab.
 #Now, make a scatterplot of the downstairs lab data such that "Date_Collected" 
@@ -63,6 +65,6 @@ df %>% group_by(Year_Collected) %>%
   
 df %>% filter(Lab %in% c("Downstairs")
 
-
+down$Date_Collected <- as.POSIXct(down$Date_Collected)
 
 
