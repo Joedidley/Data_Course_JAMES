@@ -26,7 +26,8 @@ long <- gather(dat,key="Watering",value="Height",2:3)
 long$Watering <- str_replace(long$Watering,"Treatment","")
 ggplot(long,aes(x=SampleID,y=Height,color=Watering)) +geom_boxplot()
 
+
 #save the tidied version
-write.csv(long,"./Data/long_and_tidy.csv")
+write.csv(long,"./Data/long_and_tidy.csv",row.names = FALSE)
 
 
