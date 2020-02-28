@@ -9,17 +9,17 @@ names(landdata_states) <- c("State","Region","Date","Home.Value",
                             "Structure.Cost","Land Value (USD)",
                             "Land.Share..Pct","Home.Price.Index",
                             "Land.Price.Index","Year","Qrtr")
-
-ggplot(landdata_states,aes(x=Year,y=`Land Value (USD)`,color=Region,
-        scipen = 999)) + geom_smooth() + theme_minimal()
+options(scipen = 999)
+ggplot(landdata_states,aes(x=Year,y=`Land Value (USD)`,color=Region))+ 
+  geom_smooth() + theme_minimal()
 
 
 #Export it to your Exam_2 folder as LASTNAME_Fig_1.jpg (note, that's a jpg, not a png)
         #To change the y-axis values to plain numeric, add options(scipen = 999) to your script
 
 jpeg("./Exam_2/JAMES_Fig_1.jpg") 
-ggplot(landdata_states,aes(x=Year,y=`Land Value (USD)`,color=Region,
-      scipen = 999)) + geom_smooth() + theme_minimal()
+ggplot(landdata_states,aes(x=Year,y=`Land Value (USD)`,color=Region))+ 
+  geom_smooth() + theme_minimal()
 dev.off() 
 
         
@@ -77,17 +77,21 @@ dev.off()
   #Note: The y-axis shows proportions, not raw numbers
   #This is a scatterplot, faceted by region
 
+SmallMortality <-  long$MortalityRate /1000
+p2 <- ggplot(long,aes(x=Year,y=SmallMortality)) + labs(y="Mortality Rate") + geom_point(size=0.2,color="blue") + theme_minimal()
 
-p2 <- ggplot(long,aes(x=Year,y=MortalityRate)) + geom_point(size=0.2,color="blue") + theme_minimal()
-
-p2 + facet_wrap(~ Region) + theme(legend.position = "none", +
+p2 + facet_wrap(~ Region) + theme(legend.position = "none", 
       strip.text.x = element_text(size = 7.5, face="plain"),
       strip.background = element_rect(fill = "white"))
 
 
-
-
   #Export it to your Exam_2 folder as LASTNAME_Fig_3.jpg (note, that's a jpg, not a png)
+jpeg("./Exam_2/JAMES_Fig_4.jpg")
+p2 + facet_wrap(~ Region) + theme(legend.position = "none", 
+      strip.text.x = element_text(size = 7.5, face="plain"),
+      strip.background = element_rect(fill = "white"))
+dev.off()
+
 
 #VI.		Commit and push all your code and files to GitHub. 
   #I'll pull your repository at 9:30pm sharp and grade what I find.
