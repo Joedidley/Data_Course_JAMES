@@ -31,6 +31,8 @@ summary(landdata_states$Region)
 
 landdata_states %>% filter(State %in% c("MD","VA"))
 
+#########dat[which(is.na(dat$region)),"State"] %>% unique()
+
 
 #III.    The rest of the test uses another data set. The unicef-u5mr.csv data. Get it loaded and take a look.
         #It's not exactly tidy. You had better tidy it!
@@ -71,6 +73,13 @@ jpeg("./Exam_2/JAMES_Fig_3.jpg")
 ggplot(long2,aes(x=Year,y=MortalityRate,color=Continent)) + geom_line(size=2.5) + theme_minimal() +
   labs(y="Mean Mortality Rates (deaths per 100 live births)") 
 dev.off()
+
+
+#long %>% group_by(Continent,Year) %>%
+  #summarize(meanMR = mean(Mortality,na.rm = TRUE)) %>%
+  #ggplot(aes(x=Year,y=meanMR,color=Continent)) +
+  #geom_line(size=2.5) +
+  #theme_minimal()
 
 
 #V.      Re-create the graph shown in fig4.png

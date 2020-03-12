@@ -124,3 +124,18 @@ ggplot(df, aes(x=hp,y=vs)) +
   geom_point(data = df %>% filter(vs != round(binom.pred)),
              color = "red", size = 2)
 
+mod3 = glm(vs ~ hp + wt + factor(cyl),dat = mtcars, family="binomial")
+df$binom.pred <- predict(mod3, type = "response")
+df$binom.resid <- residuals(mod3, type = "response")
+
+
+ggplot(df, aes(x=hp,y=vs)) +
+  geom_segment(aes(xend=hp,yend=binom.pred), alpha=.5) +
+  geom_point() +
+  geom_point(aes(y=binom.pred), shape=22, color="Blue") +
+  geom_point(data = df %>% filter(vs != round(binom.pred)),
+             color = "red", size = 2)
+
+summary(mod3)
+options(scipen = 999)
+df$binom.pred #binom pred gives probability of the data being 1 or 0

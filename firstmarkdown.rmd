@@ -1,0 +1,28 @@
+---
+title: "first_markdown"
+author: "James"
+date: "3/10/2020"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(plotly)
+df <- read.csv("./Data/1620_scores.csv")
+```
+
+
+This is the code for a plot of Exam 1 score distributions
+
+```{r echo=TRUE,message=FALSE,fig.align='left'}
+g1 <- ggplot(df,aes(x=Exam.1..4245260.)) + geom_histogram()
+?plotly
+
+```
+
+**BOLD** text
+*italic* text 
+
+
