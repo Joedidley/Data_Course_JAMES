@@ -25,10 +25,10 @@ buddhist = filter(utah, Buddhism.Mahayana > 0)
 # order rows by population (descending)
 buddhist = buddhist[order(buddhist$Pop_2010, decreasing = TRUE),]
 
-buddhist %>% arrange(desc(Pop_2010))
+buddhist <- buddhist %>% arrange(desc(Pop_2010))
 
 # write this new dataframe to a file
-write.csv(buddhist, file = "./buddhist_counties.csv", row.names = FALSE, quote = FALSE)
+write.csv(buddhist, file = "./Assignments/Assignment_7//buddhist_counties.csv", row.names = FALSE, quote = FALSE)
 
 ## get group summaries of religiousity based on population ##
 
@@ -36,6 +36,7 @@ write.csv(buddhist, file = "./buddhist_counties.csv", row.names = FALSE, quote =
 # note: keep these two lines the same in your updated code!
 groups = kmeans(utah$Pop_2010,6) # clusters data into 6 groups based on proximity to mean of potential groups
 utah$Pop.Group = groups$cluster # assigns a new variable to utah giving group for each county
+
 
 
 
@@ -47,7 +48,9 @@ group4 = mean(utah[utah$Pop.Group == 4,]$Religious)
 group5 = mean(utah[utah$Pop.Group == 5,]$Religious)
 group6 = mean(utah[utah$Pop.Group == 6,]$Religious)
 
-utah %>% group_by(Religious) %>% summarise(avg = mean(Pop.Group == 1))
+
+group1 = utah %>% group_by(Pop.Group) %>% summarise(meanreligious = mean(Religious))
+
 
 # same, but mean population
 group1.pop = mean(utah[utah$Pop.Group == 1,]$Pop_2010)
@@ -58,22 +61,33 @@ group5.pop = mean(utah[utah$Pop.Group == 5,]$Pop_2010)
 group6.pop = mean(utah[utah$Pop.Group == 6,]$Pop_2010)
 
 
+group1.pop = utah %>% group_by(Pop.Group) %>% summarise(meanpopulation = mean(Pop_2010))
+all = bind_cols(group1, group1.pop)
+
+
+group1[1:2]
 # make data frame of each group and mean religiosity
 religiosity = data.frame(Pop.Group = c("group1","group2","group3","group4","group5","group6"),
                          Mean.Religiosity = c(group1,group2,group3,group4,group5,group6),
                          Mean.Pop = c(group1.pop,group2.pop,group3.pop,group4.pop,group5.pop,group6.pop))
 
-
+religiosity2 = data.frame(Pop.Group =  c("group1","group2","group3","group4","group5","group6"),
+                         Mean.Religiosity = pull(all, meanreligious),
+                         Mean.Pop = pull(all, meanpopulation))
 
 
 religiosity # take quick look at resulting table
+
+religiosity2
 
 # order by decreasing population
 religiosity = religiosity[order(religiosity$Mean.Pop, decreasing = TRUE),]
 
+religiosity2 = arrange(religiosity2,desc(Mean.Pop))
 
 religiosity # take quick look at resulting table
 
+religiosity2
 
 #####################################
 #              Part 2               #
@@ -109,7 +123,7 @@ for(i in religions){
 
 # 5.  What can you say about these relationships?
 
-#
+#correlation ≠ causation 
 
 # UPLOAD YOUR ANSWERS TO CANVAS
 # DON'T FORGET TO PUSH YOUR TIDY CODE TO GITHUB AS WELL!
