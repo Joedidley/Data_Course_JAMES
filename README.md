@@ -1,6 +1,5 @@
 # Data_Course_JAMES
 
-This file contains whatever assignment 1 told me to put in here
+Welcome to the Good Burger, home of the Good burger
 
-
-This README file contains information about my uploaded assignments
+May I take your order?

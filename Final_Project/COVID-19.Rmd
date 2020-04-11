@@ -15,9 +15,8 @@ output:
 .chart-title {  /* chart_title  */
    font-size: 30px;
    font-family: Algerian;
-}
-</style>
 
+</style>
 
 ```{r setup, include=FALSE}
 #load packages
