@@ -1,0 +1,205 @@
+---
+title: "Assignment 9"
+author: "James"
+date: "4/11/2020"
+output: 
+    html_document:
+        css: bootstrap.css
+---
+note: I used the Lux theme for this document, which I got [here](https://bootswatch.com/) 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Assignment 9**
+
+## Below are the instructions for this assignment
+
+
+### **For credit...**
+
+1.  Push a completed version of your Rproj and R-markdown file (details at end of this assignment) to GitHub
+2.  Your score will also depend on your analyses and presentation of your final report
+
+
+____________
+
+# Your tasks:
+
++ Use the data set ../../Data/GradSchool_Admissions
++ You will explore and model the predictors of graduate school admission
+  - the "admit" column is coded as 1=success and 0=failure
+  - the other columns are the GRE score, the GPA, and the rank of the undergraduate institution, where I is "top-tier."
++ Document your data explorations, figures, and conclusions in a reproducible R-markdown report
++ Upload your **self-contained** R project, including knitted report, to GitHub in *your* Assignment_9 directory
+
+
+
+# So, let's get started
+
+***
+***
+***
+
+## Set up the data
+
+First, load the data and packages
+
+```{r,message=FALSE,warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(aod)
+library(plotly)
+
+dat <- read.csv("./Data/GradSchool_Admissions.csv")
+```
+
+
+Next, get an overview of the data
+
+```{r,message=FALSE,warning=FALSE}
+head(dat)
+```
+Okay, we see we are working with school admittions, where __admit__ is accepted (1) or not accepted (0), their __gre__ test score, __gpa__, and school __rank__ where 1 is the highest rank
+
+
+Let's change __rank__ to a factor
+
+```{r,message=FALSE,warning=FALSE}
+dat$rank <- factor(dat$rank)
+```
+
+## Model the data
+
+Create a model
+
+```{r,message=FALSE,warning=FALSE}
+mod <- glm(admit ~ gre + gpa + rank, data = dat, family = "binomial")
+mod
+```
+
+View summary of the model
+
+```{r,message=FALSE,warning=FALSE}
+summary(mod)
+```
+
+What about an R-squared value?
+
+```{r, message=FALSE,warning=FALSE}
+summary(lm(mod))$r.squared
+```
+Okay, pretty low... Our model might not be the best but don't sweat the small stuff
+
+## Viewing confidence intervals
+
+Use the *confint* function to obtain confidence intervals (CIs) for the coefficient estimates
+
+```{r,message=FALSE,warning=FALSE}
+confint(mod)
+```
+
+
+
+We can exponentiate the coefficients and interpret them as odds-ratios. We can use the same logic to get probability ratios and their confidence intervals, by exponentiating the confidence intervals from before
+
+```{r,message=FALSE,warning=FALSE}
+exp(coef(mod))
+```
+
+To put it all in one table, we use *cbind* to bind the coefficients and confidence intervals column-wise
+
+```{r,message=FALSE,warning=FALSE}
+## odds ratios and 95% CI
+exp(cbind(OR = coef(mod), confint(mod)))
+```
+
+We interpret this to mean that for a one unit increase in __gpa__, the odds of being admitted to graduate school (versus not being admitted) increase by a factor of 2.23
+
+
+## Predictions 
+
+Let's use predicted probabilities to help us understand the model. In order to create predicted probabilities we first need to create a new data frame with the values we want the independent variables to take on to create our predictions
+
+First, calculate the predicted probability of admission at each value of rank, holding gre and gpa at their means, and view the new data frame
+
+
+
+```{r,message=FALSE,warning=FALSE}
+newdata1 <- with(dat, data.frame(gre = mean(gre), gpa = mean(gpa), rank = factor(1:4)))
+
+## view data frame
+newdata1
+```
+
+Great, now we have the data frame we want to use to calculate the predicted probabilities
+
+
+Let's add the probablility values to the data set
+
+```{r,message=FALSE,warning=FALSE}
+newdata1$rankP <- predict(mod, newdata = newdata1, type = "response")
+newdata1
+```
+
+By reading the above chart, we understand that (while holding __gre__ and __gpa__ at their means) the predicted probability of being accepted into a graduate program is 0.52 for students from the highest prestige undergraduate institutions (rank=1)
+
+We can do something very similar to create a table of predicted probabilities varying the value of __gre__ and __rank__. To plot these, we will create 100 values of __gre__ between 200 and 800, at each value of __rank__ (i.e., 1, 2, 3, and 4)
+
+
+```{r,message=FALSE,warning=FALSE}
+newdata2 <- with(dat, data.frame(gre = rep(seq(from = 200, to = 800, length.out = 100),
+    4), gpa = mean(gpa), rank = factor(rep(1:4, each = 100))))
+```
+
+
+Then, we generate the predicted probabilities except we are also going to ask for standard errors (se = TRUE) so we can plot a confidence interval. We get the estimates on the link scale and back transform both the predicted values and confidence limits into probabilities.This gives us our final data set, with all the values we want
+
+```{r,message=FALSE,warning=FALSE}
+newdata3 <- cbind(newdata2, predict(mod, newdata = newdata2, type = "link",
+    se = TRUE))
+newdata3 <- within(newdata3, {
+    PredictedProb <- plogis(fit)
+    LL <- plogis(fit - (1.96 * se.fit))
+    UL <- plogis(fit + (1.96 * se.fit))
+})
+
+
+head(newdata3)
+```
+
+## Visualizing the new data
+
+Make a new plot with the new data set, showing the predicted probability that students were accepted given their gre and school ranking 
+
+```{r,message=FALSE,warning=FALSE}
+p <- ggplot(newdata3, aes(x = gre, y = PredictedProb)) + geom_ribbon(aes(ymin = LL,
+    ymax = UL, fill = rank), alpha = 0.2) + geom_line(aes(colour = rank),
+    size = 1)
+p
+```
+
+That looks's a little boring, so let's use an interactive plot using the *plotly* package
+
+```{r,message=FALSE,warning=FALSE}
+fig <- plot_ly( type = 'scatter', mode = 'markers')
+fig <- fig %>% 
+  add_trace(data = newdata3,
+    x = ~gre,
+    y = ~PredictedProb,
+    hoverinfo = 'image',
+    color = newdata3$rank,
+    labels = newdata3$rank,
+    showlegend = TRUE
+    )
+fig
+```
+
+
+
+## Conclusions
+
+
+Whether we use the first or the second graph, we can see the relationships between the given varialbes. There appears to be a positive relationship between __gre__, __rank__ and probability of being accepted. In other words, student's who had a higher __gre__ and __rank__ had a higher change of acceptance than those who scored lower and came from schools of less prestige. 
