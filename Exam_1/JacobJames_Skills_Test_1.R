@@ -1,26 +1,26 @@
 library(tidyverse)
-df <- read.csv("./Exam_1/DNA_Conc_By_Extraction_Date.csv")
-
-
-#create separate histograms of the DNA concentrations for Katy and Ben. 
-#Make sure to add nice labels to these (x-axis and main title).
+df <- read.csv("./Exam_1/DNA_Conc_by_Extraction_Date.csv")
 
 glimpse(df)
-table(df$DNA_Concentration_Ben)
-levels(df$DNA_Concentration_Ben)
 summary(df$DNA_Concentration_Ben)
 
 #part 1
+#create separate histograms of the DNA concentrations for Katy and Ben. 
+#Make sure to add nice labels to these (x-axis and main title).
 hist(df$DNA_Concentration_Ben,main="Ben",xlab="DNA Concentration",ylab="Frequency")
 hist(df$DNA_Concentration_Katy,main="Katy",xlab="DNA Concentration",ylab="Frequency")
 
 #part 2
+#Your second task is to look at DNA concentrations from the different extraction years. 
+#One way to do this is a separate figure for each student is demonstrated in those two files:	ZAHN_Plot1.jpeg and ZAHN_Plot2.jpeg 
+#Open those files in some image viewing program and take a look. I'd like you to re-create these exactly, including the labels.
+#This is tricky, so I'll give a hint: the plot() function behaves differently depending on the classes of vectors that are given to it.
 
 class(df$Year_Collected) #integer
 class(df$DNA_Concentration_Ben) #numeric
 
-as.factor(df$Year_Collected)
-df$Year_Collected <- as.factor(df$Year_Collected)
+
+df$Year_Collected <- as.factor(df$Year_Collected) #change Year_Collected to factor
 class(df$Year_Collected) #now it's a factor
 
 plot(y=df$DNA_Concentration_Ben,x=df$Year_Collected,
@@ -48,13 +48,11 @@ dev.off()
 #Part 4
 #in which extraction YEAR, was Ben's performance the lowest RELATIVE TO Katy's performance?
 
-summary(df$DNA_Concentration_Katy)[6]
-summary(df$DNA_Concentration_Ben)[1]
+ben_vs_katy <- df$DNA_Concentration_Ben - df$DNA_Concentration_Katy
+min(ben_vs_katy)
+bens_worst_relative <- which(ben_vs_katy == min(ben_vs_katy))
 
-df %>% group_by(Year_Collected) %>%
-
-
-
+df[bens_worst_relative, "Year_Collected"]
 
 #Part 5
 #Subset the data frame so it's just the "Downstairs" lab.
@@ -62,9 +60,16 @@ df %>% group_by(Year_Collected) %>%
 #is on the x-axis and "DNA_Concentration_Ben" is on the y-axis. 
 #Save this scatterplot as "Ben_DNA_over_time.jpg" in your Exam_1 directory.
 
-  
-df %>% filter(Lab %in% c("Downstairs")
+down <- df %>% filter(Lab == "Downstairs")
 
 down$Date_Collected <- as.POSIXct(down$Date_Collected)
 
+plot(y=down$DNA_Concentration_Ben,x=down$Date_Collected,
+     main="Ben's Concentration Downstairs", ylab="DNA Concentration",
+     xlab="Date Collected")
 
+jpeg("./Exam_1/Ben_DNA_over_time.jpg")
+plot(y=down$DNA_Concentration_Ben,x=down$Date_Collected,
+     main="Ben's Concentration Downstairs", ylab="DNA Concentration",
+     xlab="Date Collected")
+dev.off()
