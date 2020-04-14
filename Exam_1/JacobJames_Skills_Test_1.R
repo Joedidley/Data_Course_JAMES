@@ -73,3 +73,21 @@ plot(y=down$DNA_Concentration_Ben,x=down$Date_Collected,
      main="Ben's Concentration Downstairs", ylab="DNA Concentration",
      xlab="Date Collected")
 dev.off()
+
+summary(down$DNA_Concentration_Ben)
+#Bonus
+#20 pts BONUS - For Ben, which year's extractions had the highest *average* DNA
+#concentration and what is it?
+#(code for correct answer and correct file named "Ben_Average_Conc.csv")
+
+data.frame <- df %>%
+  group_by(Year_Collected) %>%
+  summarise(avg = mean(DNA_Concentration_Ben))
+
+df2 <- data.frame
+print(df2)
+
+write.csv(df2,"./Exam_1/Ben_Average_Conc.csv", row.names = TRUE)
+
+#ANSWER
+#2007 had the highest average at 1.46
