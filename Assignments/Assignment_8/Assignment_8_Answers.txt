@@ -1,2 +1,106 @@
-#1. I would say they are all meaningless since the RSqVal was massive and the graph doesn't make sense. 
-#2 I don't think I found any non-linear relationships. Everything was a straight line.
+#1. I would say they are all meaningless since the RSqVal's were super low and the predicted values shown on the graph just aren't that accurate compared to the data. 
+#2 I don't *think* I found any non-linear relationships? At leaset, when I used the ggpairs function I didn't seem to notice any. I found a good artcile that explained how to deal with non-linear relationships, using the code below:
+
+
+
+#set a seed value
+
+set.seed(23)
+
+#Generate x as 100 integers using seq function
+
+x<-seq(0,100,1)
+
+#Generate y as a*e^(bx)+c
+
+y<-runif(1,0,20)*exp(runif(1,0.005,0.075)*x)+runif(101,0,5)
+
+#How does our data look like? Lets plot it
+
+plot(x,y)
+
+#Linear model
+
+lin_mod=lm(y~x)
+
+#Plotting the model
+
+plot(x,y)
+
+abline(lin_mod)
+
+nonlin_mod=nls(y~a*exp(b*x),start=list(a=13,b=0.1)) #a is the starting value and b is the exponential start
+
+#This new plot can be made by using the lines() function
+
+plot(x,y)
+
+lines(x,predict(nonlin_mod),col="red")
+
+#Error calculation
+
+error <- lin_mod$residuals  
+
+lm_error <- sqrt(mean(error^2))   #5.960544
+
+error2=y-predict(nonlin_mod)
+
+nlm_error <- sqrt(mean(error2^2)) #1.527064
+
+nonlin_mod
+
+attach(Puromycin)
+
+plot(Puromycin$conc,Puromycin$rate)
+
+#Define a function to apply Michaelis-Menten equation
+
+mm=function(conc,vmax,k) vmax*conc/(k+conc)
+
+#Use the nls data over the first subset of treated data. I will set the starting values as 50 and 0.05
+
+mm1=nls(rate~mm(conc,vmax,k),data=Puromycin,start=c(vmax=50,k=0.05),subset=state=="treated")
+
+#Use a similar function for the second subset of untreated data
+
+mm2=nls(rate~mm(conc,vmax,k),data=Puromycin,start=c(vmax=50,k=0.05),subset=state=="untreated")
+
+mm3=nls(rate~SSmicmen(conc,vmax,k),data=Puromycin,subset=state=="treated")
+
+mm4=nls(rate~SSmicmen(conc,vmax,k),data=Puromycin,subset=state=="untreated")
+
+#Print the model summary and estimated parameters for mm1
+
+mm1
+
+#Print the model summary and estimated parameters for mm3
+
+mm3
+
+#Print the model summary and estimated parameters for mm2
+
+mm2
+
+#Print the model summary and estimated parameters for mm4
+
+mm4
+
+#Print the names of all functions in R which start with SS
+
+apropos("^SS")
+
+#Goodness of fit for first nonlinear function
+
+cor(y,predict(nonlin_mod)) #0.9976462
+
+#Goodness of fit for treated values of Puromycin function
+
+cor(subset(Puromycin$rate,state=="treated"),predict(mm3)) #0.9817072
+
+cor(subset(Puromycin$rate,state=="treated"),predict(mm1)) #0.9817072
+
+#Goodness of fit for untreated values of Puromycin function
+
+cor(subset(Puromycin$rate,state=="untreated"),predict(mm2)) #0.9699776
+
+cor(subset(Puromycin$rate,state=="untreated"),predict(mm4)) #0.9699777
